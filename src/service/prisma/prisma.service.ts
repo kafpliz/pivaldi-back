@@ -8,7 +8,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
     constructor() {
         const dbUrl = new URL(process.env.DATABASE_URL!)
-        console.log(dbUrl.password);
+    
         
         const pool = new Pool({
             host: dbUrl.hostname,

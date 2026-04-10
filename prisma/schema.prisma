@@ -21,7 +21,7 @@ model User {
   emailCode    Int?
   telCode      Int?
   emailCodeExpiries BigInt?
-  telCodeExpiries BigInt?
+  telCodeExpiries BigInt? 
   accessToken  String?
   refreshToken String?
   private_key String?

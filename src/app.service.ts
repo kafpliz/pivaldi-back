@@ -8,6 +8,6 @@ export class AppService {
 
  async getHello() {
 
-    return await this.prisma.user.findMany();
+    return await 'Hello gay';
   }
 }

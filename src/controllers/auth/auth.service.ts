@@ -12,16 +12,16 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class AuthService {
     private readonly SALT_ROUNDS = 12;
-  
-    
+
+
     constructor(private prisma: PrismaService, private jwt: JwtService, private email: EmailService) { }
 
     async signIn(data: IAuthSignInReq) {
         if (!data.email && !data.tel) {
             throw new HttpException({ success: false, message: 'Укажите почту или телефон' }, HttpStatus.BAD_REQUEST)
         }
-        console.log('in',Date.now() + (3 * 60 * 60 * 1000));
-        
+
+
         const user = await this.prisma.user.findFirst({
             where: {
                 OR: [
@@ -53,11 +53,14 @@ export class AuthService {
                 refreshToken: tokens.refreshToken
             }
         })
-
+        const {id, email, tel} = user
         return {
             success: true,
             message: 'Вход выполнен успешно',
-            tokens
+            tokens,
+            user: {
+                id,email,tel
+            }
         }
     }
 
@@ -66,6 +69,7 @@ export class AuthService {
         if (!data.email && !data.tel) {
             throw new HttpException({ success: false, message: 'Укажите почту или телефон' }, HttpStatus.BAD_REQUEST)
         }
+        console.log(data);
 
         const candidate = await this.prisma.user.findFirst({
             where: {
@@ -75,8 +79,10 @@ export class AuthService {
                 ]
             }
         })
+
+
         if (candidate) {
-            throw new HttpException({ success: false, message: 'Такой пользователь уже существует' }, HttpStatus.BAD_REQUEST)
+            throw new HttpException({ success: false, message: 'Пользователь с такими данными уже существует.' }, HttpStatus.BAD_REQUEST)
         }
         let hashedPassword: string;
 
@@ -92,7 +98,7 @@ export class AuthService {
 
 
         userData.email = data.email;
-        userData.tel = data.tel.replace('+', '').replace(/[\s\-\(\)]/g, '');
+        userData.tel = data.tel
         console.log(userData.tel);
 
         const code = this.email.generateCode()
@@ -260,17 +266,17 @@ export class AuthService {
             }
         })
 
-        return { 
+        return {
             success: true, message: 'Успешно!',
-            tokens 
+            tokens
         }
 
     }
 
-    async resendCode(data:IAuthResendReq){
-       
-        
-          const user = await this.prisma.user.findFirst({
+    async resendCode(data: IAuthResendReq) {
+
+
+        const user = await this.prisma.user.findFirst({
             where: {
                 email: data.email
             }
@@ -281,23 +287,23 @@ export class AuthService {
         }
         const code = this.email.generateCode()
         try {
-        const exp = Date.now() + (3 * 60 * 60 * 1000)
-        console.log(exp);
-        
-        await this.email.sendVerifivicationCode(data.email, code)
-        await this.prisma.user.update({
-            where: {
-                id: user.id
-            },
-            data: {
-                emailCodeExpiries: exp,
-                emailCode: code
-            }
-        })
+            const exp = Date.now() + (3 * 60 * 60 * 1000)
+            console.log(exp);
 
-        return { success: true, message: 'Успешно!' }
+            await this.email.sendVerifivicationCode(data.email, code)
+            await this.prisma.user.update({
+                where: {
+                    id: user.id
+                },
+                data: {
+                    emailCodeExpiries: exp,
+                    emailCode: code
+                }
+            })
+
+            return { success: true, message: 'Успешно!' }
         } catch (error) {
-             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
+            throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
 
     }
@@ -339,15 +345,24 @@ export class AuthService {
     }
 
     async logOut(userId: number) {
-        await this.prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                refreshToken: null,
-                accessToken: null
+        try {
+            await this.prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    refreshToken: null,
+                    accessToken: null
+                }
+            })
+
+            return {
+                success:true,
+                message: 'Выход успешен!'
             }
-        })
+        } catch (error: any) {
+            throw new HttpException({ success: false, message: error.message }, HttpStatus.BAD_GATEWAY)
+        }
     }
 
 

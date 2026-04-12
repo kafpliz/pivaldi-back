@@ -40,8 +40,7 @@ export class AuthVerifyEmailDTO {
     email!: string
 
 
-    @Min(100000, { message: EAuthSignInDTO.lengthVerifyCode })
-    @Max(999999, { message: EAuthSignInDTO.lengthVerifyCode })
+    @Length(6)
     code!: number
 }
 
@@ -67,6 +66,10 @@ export class AuthSetPasswordDTO {
 export class AuthResendDTO {
     @IsEmail({},{message: EAuthSignInDTO.email})
     email!:string
+}
+export class AuthRefreshDTO {
+    @IsNotEmpty({message: EAuthSignInDTO.empty})
+    refreshToken!:string
 }
 
 export function IsEmailOrPhone(validationOptions: ValidationOptions) {

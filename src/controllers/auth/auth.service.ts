@@ -79,7 +79,7 @@ export class AuthService {
                 ]
             }
         })
-        console.log("Candodate",candidate);
+ 
         
 
         if (candidate) {
@@ -94,7 +94,7 @@ export class AuthService {
             
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
-        console.log('hashedPAss', hashedPassword);
+      
         
         const userData: any = {
             password: hashedPassword,

@@ -26,8 +26,7 @@ export class EmailService {
 
     async sendVerifivicationCode(toEmail: string, code: number): Promise<SendResult> {
         try {
-              console.log(this.emailConfig);
-              console.log(this.transporter);
+          
               
             const info = await this.transporter.sendMail({
                 from: 'Pivaldi ',

@@ -17,15 +17,16 @@ export class EmailService {
                 pass:  process.env.SMTP_PASS!
             }
         }
-
+        console.log(this.emailConfig);
+        
         this.transporter = nodemailer.createTransport(this.emailConfig)
+        console.log(this.transporter);
+        
     }
 
     async sendVerifivicationCode(toEmail: string, code: number): Promise<SendResult> {
         try {
           
-            
-
             const info = await this.transporter.sendMail({
                 from: 'Pivaldi ',
                 to: toEmail,

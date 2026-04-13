@@ -69,7 +69,7 @@ export class AuthService {
         if (!data.email && !data.tel) {
             throw new HttpException({ success: false, message: 'Укажите почту или телефон' }, HttpStatus.BAD_REQUEST)
         }
-        console.log(data);
+     
 
         const candidate = await this.prisma.user.findFirst({
             where: {
@@ -99,7 +99,7 @@ export class AuthService {
 
         userData.email = data.email;
         userData.tel = data.tel
-        console.log(userData.tel);
+     
 
         const code = this.email.generateCode()
         const experiesCode = Date.now() + (3 * 60 * 60 * 1000);
@@ -109,6 +109,8 @@ export class AuthService {
             userData['emailCode'] = code
             userData['emailCodeExpiries'] = experiesCode
         } catch (error) {
+            console.log(error);
+            
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
 

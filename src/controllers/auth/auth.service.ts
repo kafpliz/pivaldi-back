@@ -107,9 +107,12 @@ export class AuthService {
 
         const code = this.email.generateCode()
         const experiesCode = Date.now() + (3 * 60 * 60 * 1000);
-        try {
-            await this.email.sendVerifivicationCode(data.email, code)
 
+        try {
+            console.log('Отправляю. почту');
+            
+            await this.email.sendVerifivicationCode(data.email, code)
+console.log('отправил');
             userData['emailCode'] = code
             userData['emailCodeExpiries'] = experiesCode
         } catch (error) {

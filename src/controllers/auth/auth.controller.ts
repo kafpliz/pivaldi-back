@@ -22,7 +22,7 @@ export class AuthController {
     @Post('sign-up')
     signUp(@Body() body: AuthSignUpDTO){
         const data = this.normalizedSignUp(body.email, body.tel, body.password)
-        console.log('SIgnUp',data);
+  
         
         return this.service.signUp(data)
     }

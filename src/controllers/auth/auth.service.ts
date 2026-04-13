@@ -79,7 +79,8 @@ export class AuthService {
                 ]
             }
         })
-
+        console.log("Candodate",candidate);
+        
 
         if (candidate) {
             throw new HttpException({ success: false, message: 'Пользователь с такими данными уже существует.' }, HttpStatus.BAD_REQUEST)
@@ -89,9 +90,12 @@ export class AuthService {
         try {
             hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS)
         } catch (error) {
+            console.log('hash error',error);
+            
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
-
+        console.log('hashedPAss', hashedPassword);
+        
         const userData: any = {
             password: hashedPassword,
         };
@@ -109,7 +113,7 @@ export class AuthService {
             userData['emailCode'] = code
             userData['emailCodeExpiries'] = experiesCode
         } catch (error) {
-            console.log(error);
+            console.log('send',error);
             
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
@@ -118,11 +122,13 @@ export class AuthService {
         await this.prisma.user.create({
             data: userData
         })
-
-        return {
+        const response = {
             success: true,
-            message: `Подтвердите ${data.email ? 'почту' : 'номер телефона'}. Введи код отправленный вам на устройство. `,
+            message: `Подтвердите почту. Введи код отправленный вам на почту.`,
         };
+        console.log(response);
+        
+        return response
     }
 
     async verifyEmail(data: IAuthVerifyCodeReq) {

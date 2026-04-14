@@ -9,7 +9,7 @@ export class UserController {
     @Get('')
     getUser(@Req() req){
         const user = req['user']
-         
         return this.service.getUser(user.id)
     }
+    
 }

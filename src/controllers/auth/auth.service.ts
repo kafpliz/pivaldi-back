@@ -53,23 +53,24 @@ export class AuthService {
                 refreshToken: tokens.refreshToken
             }
         })
-        const {id, email, tel} = user
+        const { id, email, tel } = user
         return {
             success: true,
             message: 'Вход выполнен успешно',
             tokens,
             user: {
-                id,email,tel
+                id, email, tel
             }
         }
     }
 
     async signUp(data: IAuthSignUpReq) {
-
+        console.log(data);
+        
         if (!data.email && !data.tel) {
             throw new HttpException({ success: false, message: 'Укажите почту или телефон' }, HttpStatus.BAD_REQUEST)
         }
-     
+
 
         const candidate = await this.prisma.user.findFirst({
             where: {
@@ -79,8 +80,8 @@ export class AuthService {
                 ]
             }
         })
- 
-        
+
+
 
         if (candidate) {
             throw new HttpException({ success: false, message: 'Пользователь с такими данными уже существует.' }, HttpStatus.BAD_REQUEST)
@@ -90,12 +91,12 @@ export class AuthService {
         try {
             hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS)
         } catch (error) {
-            console.log('hash error',error);
-            
+            console.log('hash error', error);
+
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
-      
-        
+
+
         const userData: any = {
             password: hashedPassword,
         };
@@ -103,21 +104,22 @@ export class AuthService {
 
         userData.email = data.email;
         userData.tel = data.tel
-     
+
 
         const code = this.email.generateCode()
         const experiesCode = Date.now() + (3 * 60 * 60 * 1000);
 
         try {
-            console.log('Отправляю. почту');
+
+            console.log('Отправляю');
             
             await this.email.sendVerifivicationCode(data.email, code)
-console.log('отправил');
+             console.log('Отправbk');
             userData['emailCode'] = code
             userData['emailCodeExpiries'] = experiesCode
         } catch (error) {
-            console.log('send',error);
-            
+            console.log('send', error);
+
             throw new HttpException({ success: false, message: 'Ошибка сервера' }, HttpStatus.BAD_GATEWAY)
         }
 
@@ -130,7 +132,7 @@ console.log('отправил');
             message: `Подтвердите почту. Введи код отправленный вам на почту.`,
         };
         console.log(response);
-        
+
         return response
     }
 
@@ -153,19 +155,24 @@ console.log('отправил');
         if (user.emailCode != data.code) {
             throw new HttpException({ success: false, message: 'Неверный код подверждения!' }, HttpStatus.BAD_REQUEST)
         } else {
+
+            const tokens = await this.generateTokens(user.id, user.email || user.tel,)
+
             await this.prisma.user.update({
                 where: {
                     id: user.id
                 },
                 data: {
                     confirmEmail: true,
-
+                    accessToken: tokens.accessToken,
+                    refreshToken: tokens.refreshToken
                 }
             })
 
             return {
                 success: true,
-                message: 'Успешно! Осталось только войти в аккаунт!'
+                message: 'Успешно! Осталось только войти в аккаунт!',
+                tokens
             }
         }
 
@@ -368,7 +375,7 @@ console.log('отправил');
             })
 
             return {
-                success:true,
+                success: true,
                 message: 'Выход успешен!'
             }
         } catch (error: any) {

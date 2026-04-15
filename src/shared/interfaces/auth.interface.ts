@@ -7,6 +7,8 @@ export interface IAuthSignUpReq {
     email: string
     tel: string
     password: string
+    name:string
+lastName:string
 }
 
 export interface IAuthVerifyCodeReq {

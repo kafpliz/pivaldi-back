@@ -46,7 +46,7 @@ export class EmailService {
 
             })
 
-            console.log(info);
+           
             
             
             return { success: true, messageId: info.messageId };

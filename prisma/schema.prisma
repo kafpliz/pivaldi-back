@@ -14,8 +14,11 @@ datasource db {
 model User {
   id           Int      @id @unique @default(autoincrement())
   password     String
-  email        String?  @unique
-  tel          String?  @unique
+  email        String  @unique
+  tel          String  @unique
+  name String
+  lastName String
+  lang String @default("ru")
   confirmEmail Boolean  @default(false)
   confirmTel   Boolean  @default(false)
   emailCode    Int?
@@ -28,4 +31,5 @@ model User {
   canChangePass Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
 }

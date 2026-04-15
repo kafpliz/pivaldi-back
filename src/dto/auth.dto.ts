@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty, IsStrongPassword, Length, Max, Min, registerDecorator, ValidationOptions } from "class-validator";
+import { IsEmail, IsNotEmpty, IsStrongPassword, Length, Max, MaxLength, Min, registerDecorator, ValidationOptions } from "class-validator";
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { EAuthSignInDTO } from "src/shared/enum/dto.enum";
-
+import profanityList from '../shared/utils/profanity.json'
 export class AuthSignInDTO {
     @IsNotEmpty({ message: EAuthSignInDTO.loginEmpty })
     @IsEmailOrPhone({ message: EAuthSignInDTO.IsEmailOrPhone })
@@ -20,6 +20,15 @@ export class AuthSignUpDTO {
     @IsEmail({}, { message: EAuthSignInDTO.email })
     email!: string
 
+    @IsNotEmpty({message: EAuthSignInDTO.empty})
+    @IsNotProfanity({message: EAuthSignInDTO.IsNotProfanity})
+    @MaxLength(30, {message: EAuthSignInDTO.MaxLength})
+    name!: string
+    
+    @IsNotProfanity({message: EAuthSignInDTO.IsNotProfanity})
+    @IsNotEmpty({message: EAuthSignInDTO.empty})
+    @MaxLength(30, {message: EAuthSignInDTO.MaxLength})
+    lastName!: string
 
     @IsPhone({ message: EAuthSignInDTO.tel })
     tel!: string
@@ -45,14 +54,14 @@ export class AuthVerifyEmailDTO {
 }
 
 export class AuthForgotPasswordDTO {
-    @IsNotEmpty({message: EAuthSignInDTO.key})
+    @IsNotEmpty({ message: EAuthSignInDTO.key })
     key!: string
     @Min(100000, { message: EAuthSignInDTO.lengthVerifyCode })
     @Max(999999, { message: EAuthSignInDTO.lengthVerifyCode })
     code!: number
 }
 export class AuthSetPasswordDTO {
-    @IsNotEmpty({message: EAuthSignInDTO.key})
+    @IsNotEmpty({ message: EAuthSignInDTO.key })
     key!: string
     @IsStrongPassword({
         minLength: 6,
@@ -64,12 +73,12 @@ export class AuthSetPasswordDTO {
     password!: string
 }
 export class AuthResendDTO {
-    @IsEmail({},{message: EAuthSignInDTO.email})
-    email!:string
+    @IsEmail({}, { message: EAuthSignInDTO.email })
+    email!: string
 }
 export class AuthRefreshDTO {
-    @IsNotEmpty({message: EAuthSignInDTO.empty})
-    refreshToken!:string
+    @IsNotEmpty({ message: EAuthSignInDTO.empty })
+    refreshToken!: string
 }
 
 export function IsEmailOrPhone(validationOptions: ValidationOptions) {
@@ -106,7 +115,7 @@ export function IsPhone(validationOptions: ValidationOptions) {
             options: validationOptions,
             validator: {
                 validate(value: any) {
-                    if (!value || typeof value !== 'string') return false;
+                    if (!value || typeof value !== 'string' ) return false;
                     const cleaned = value.replace(/[\s\-\(\)]/g, '');
                     const isPhone = isValidPhoneNumber(cleaned, 'RU');
 
@@ -114,5 +123,28 @@ export function IsPhone(validationOptions: ValidationOptions) {
                 }
             }
         })
+    }
+}
+
+
+export function IsNotProfanity(validationOptions: ValidationOptions) {
+    return function (object: object, propertyName: string) {
+        registerDecorator({
+            name: 'isNotProfanity',
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            validator: {
+                validate(value, validationArguments) {
+                 
+                    if (typeof value !== 'string' || value.length == 0) return true;
+                    const lowerValue = value.toLowerCase();
+       
+                    return !profanityList.some(profaneWord =>
+                        lowerValue.includes(profaneWord.toLowerCase())
+                    );
+                },
+            }
+            })
     }
 }

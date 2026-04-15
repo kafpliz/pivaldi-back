@@ -21,9 +21,8 @@ export class AuthController {
     @Public()
     @Post('sign-up')
     signUp(@Body() body: AuthSignUpDTO){
-        const data = this.normalizedSignUp(body.email, body.tel, body.password)
-  
-        
+        const data = this.normalizedSignUp(body.email, body.tel, body.password, body.name, body.lastName)
+
         return this.service.signUp(data)
     }
 
@@ -69,12 +68,7 @@ export class AuthController {
     }
 
 
-    @Post('sign-out')
-    logOut(@Req() req){
-        const user = req['user']
-        return this.service.logOut(user.id)
-        
-    }
+    
     private normalizedSignIn(login: string, password: string) {
         const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
         const isEmail = emailRegex.test(login)
@@ -97,7 +91,7 @@ export class AuthController {
         }
         throw new HttpException({succes: false, message: "Логин должен быть почтой или номером телефона"}, HttpStatus.BAD_GATEWAY)
     }
-    private normalizedSignUp(email: string,tel:string, password: string) {
+    private normalizedSignUp(email: string,tel:string, password: string,name:string, lastName:string,) {
     
 
         const cleaned = tel.replace(/[\s\-\(\)]/g, '').replace('+', '');
@@ -106,7 +100,7 @@ export class AuthController {
             return {
                 tel: cleaned,
                 email,
-                password
+                password,name,lastName
             };
         }
         throw new HttpException({succes: false, message: "Ошибка при нормализации данных."}, HttpStatus.BAD_GATEWAY)

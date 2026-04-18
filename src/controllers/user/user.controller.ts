@@ -35,6 +35,8 @@ export class UserController {
     @Post('delete')
     async deleteUser(@Req() req) {
         const user = req['user']
+        console.log(user);
+        
         return this.service.deleteAcc(user.id)
     }
 }

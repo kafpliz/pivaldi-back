@@ -17,7 +17,7 @@ export interface IAuthVerifyCodeReq {
 }
 export interface IAuthForgorPasswordReq {
     key: string
-    code: number
+    code: string
 }
 export interface IAuthNewPasswordReq {
     key: string

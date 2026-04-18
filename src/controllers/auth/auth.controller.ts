@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, Req } from '@nestjs/common';
-import { AuthForgotPasswordDTO, AuthRefreshDTO, AuthResendDTO, AuthSetPasswordDTO, AuthSignInDTO, AuthSignUpDTO, AuthVerifyEmailDTO } from 'src/dto/auth.dto';
+import { AuthForgotPasswordDTO, AuthForgotPasswordEmailDTO, AuthRefreshDTO, AuthResendDTO, AuthSetPasswordDTO, AuthSignInDTO, AuthSignUpDTO, AuthVerifyEmailDTO } from 'src/dto/auth.dto';
 import { AuthService } from './auth.service';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import { Public } from 'src/shared/decorators/public.decorator';
@@ -33,14 +33,12 @@ export class AuthController {
     }
 
     @Public()
-    @Get('forgot-password')
-    forgotPassword(@Query('email') email:string){
-         const emailRegex = /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/;
-        const isEmail = emailRegex.test(email)
-        if(!isEmail){
-             throw new HttpException({ success: false, message: 'Введите корректную почту!' }, HttpStatus.BAD_REQUEST)
-        }
-        return this.service.forgotPasswordSendCode(email)
+    @Post('forgot-password-email')
+    forgotPassword(@Body()body:AuthForgotPasswordEmailDTO ){
+         
+        console.log('step');
+        
+        return this.service.forgotPasswordSendCode(body.email)
     }
 
     @Public()

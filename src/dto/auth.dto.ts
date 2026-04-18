@@ -43,6 +43,11 @@ export class AuthSignUpDTO {
     password!: string
 }
 
+export class AuthForgotPasswordEmailDTO {
+    @IsEmail({}, { message: EAuthSignInDTO.email })
+    email!: string
+
+}
 export class AuthVerifyEmailDTO {
 
     @IsEmail({}, { message: EAuthSignInDTO.email })
@@ -56,9 +61,8 @@ export class AuthVerifyEmailDTO {
 export class AuthForgotPasswordDTO {
     @IsNotEmpty({ message: EAuthSignInDTO.key })
     key!: string
-    @Min(100000, { message: EAuthSignInDTO.lengthVerifyCode })
-    @Max(999999, { message: EAuthSignInDTO.lengthVerifyCode })
-    code!: number
+    @Length(6, 6)
+    code!: string
 }
 export class AuthSetPasswordDTO {
     @IsNotEmpty({ message: EAuthSignInDTO.key })

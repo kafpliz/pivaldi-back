@@ -231,11 +231,11 @@ export class AuthService {
             throw new HttpException({ success: false, message: 'Срок действия кода уже истёк, получите новый!' }, HttpStatus.BAD_REQUEST)
         }
 
-        if (user.emailCode != data.code) {
+        if (user.emailCode != Number(data.code)) {
             throw new HttpException({ success: false, message: 'Неверный код подверждения!' }, HttpStatus.BAD_REQUEST)
         }
 
-        if (user.emailCode == data.code) {
+        if (user.emailCode == Number(data.code)) {
             await this.prisma.user.update({
                 where: {
                     id: user.id

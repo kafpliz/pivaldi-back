@@ -28,6 +28,7 @@ model User {
   accessToken  String?
   refreshToken String?
   private_key String?
+  resto String? 
   canChangePass Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

@@ -300,7 +300,7 @@ export class AuthService {
                 email: data.email
             }
         })
-
+        
         if (!user) {
             throw new HttpException({ success: false, message: 'Такого пользователя не существует!' }, HttpStatus.BAD_REQUEST)
         }

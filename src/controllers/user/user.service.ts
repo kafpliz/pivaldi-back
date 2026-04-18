@@ -18,7 +18,8 @@ export class UserService {
                 email: true,
                 tel: true,
                 name: true,
-                lastName: true
+                lastName: true,
+                resto: true
             }
         })
 

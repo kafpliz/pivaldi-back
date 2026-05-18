@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,25 +7,154 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @unique @default(autoincrement())
-  password     String
-  email        String  @unique
-  tel          String  @unique
-  name String
-  lastName String
-  lang String @default("ru")
-  confirmEmail Boolean  @default(false)
-  confirmTel   Boolean  @default(false)
-  emailCode    Int?
-  telCode      Int?
+  id                Int      @id @unique @default(autoincrement())
+  password          String
+  email             String   @unique
+  tel               String   @unique
+  confirmEmail      Boolean  @default(false)
+  confirmTel        Boolean  @default(false)
+  emailCode         Int?
+  telCode           Int?
+  accessToken       String?
+  refreshToken      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   emailCodeExpiries BigInt?
-  telCodeExpiries BigInt? 
-  accessToken  String?
-  refreshToken String?
-  private_key String?
-  resto String? 
-  canChangePass Boolean @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  telCodeExpiries   BigInt?
+  private_key       String?
+  canChangePass     Boolean  @default(false)
+  lang              String   @default("ru")
+  lastName          String
+  name              String
+  resto             String?
+}
 
+model Affiche {
+  id           Int        @id @unique @default(autoincrement())
+  name         String
+  time         DateTime
+  photo        String
+  restaurantId Int
+  updatedAt    DateTime
+  createdAt    DateTime   @default(now())
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([time, restaurantId])
+}
+
+model Category {
+  id        Int          @id @unique @default(autoincrement())
+  name      String
+  photo     String
+  comment   String?
+  type      CategoryType @default(REGULAR)
+  updatedAt DateTime
+  createdAt DateTime     @default(now())
+  isBar     Boolean      @default(false)
+  MenuItem  MenuItem[]
+
+  @@unique([name, type])
+}
+
+model Restaurant {
+  id          Int        @id @unique @default(autoincrement())
+  name        String
+  address     String
+  phone       BigInt
+  isFranchise Boolean    @default(false)
+  restoplace  Json
+  tour3d      String
+  updatedAt   DateTime
+  createdAt   DateTime   @default(now())
+  affiche     Affiche[]
+  delivery    Delivery[]
+}
+
+model Rules {
+  id        Int      @unique @default(autoincrement())
+  text      String
+  updatedAt DateTime
+  createdAt DateTime @default(now())
+  type      RuleType
+}
+
+model PushDevice {
+  id            String   @id @default(uuid())
+  expoPushToken String   @unique
+  platform      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  body      String
+  data      Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  count     Int
+}
+
+model WorkingHour {
+  id        Int          @id @unique @default(autoincrement())
+  day       Int
+  openTime  String
+  closeTime String
+  isClosed  Boolean      @default(false)
+  type      CategoryType @default(REGULAR)
+  updatedAt DateTime
+  createdAt DateTime     @default(now())
+
+  @@unique([day, type])
+}
+
+model Franchise {
+  id        Int      @id @unique @default(autoincrement())
+  photo     String
+  order     Int
+  updatedAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Delivery {
+  id           Int        @id @unique @default(autoincrement())
+  restaurantId Int
+  photo        String?
+  name         String?
+  slug         SlugType
+  link         String?
+  updatedAt    DateTime
+  createdAt    DateTime   @default(now())
+  phone        BigInt?
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model MenuItem {
+  id         Int      @id @unique @default(autoincrement())
+  categoryId Int
+  name       String?
+  photo      String
+  comment    String?
+  price      Float?
+  updatedAt  DateTime
+  createdAt  DateTime @default(now())
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([name, categoryId])
+}
+
+enum CategoryType {
+  REGULAR
+  FRANCHISE
+}
+
+enum RuleType {
+  positive
+  negative
+}
+
+enum SlugType {
+  pickup
+  delivery
 }

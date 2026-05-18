@@ -12,7 +12,7 @@ export class EmailSletterService {
     try {
       console.log(createEmailSletterDto);
       
-      await this.email.send('kafpliz@gmail.com', 'Трудоустройство в ресторан PIVALDI', `Имя: ${createEmailSletterDto.name}\n\nНомер телефона: ${createEmailSletterDto.phone}\n\nХочу попасть в ресторан: ${createEmailSletterDto.resto}`)
+      await this.email.send('pivaldihrd@mail.ru', 'Трудоустройство в ресторан PIVALDI', `Имя: ${createEmailSletterDto.name}\n\nНомер телефона: ${createEmailSletterDto.phone}\n\nХочу попасть в ресторан: ${createEmailSletterDto.resto}`)
 
       return
     } catch (error: any) {
@@ -23,8 +23,8 @@ export class EmailSletterService {
  async createFr(data:CreateEmailSletterFrDto) {
       try {
       console.log(data);
-      
-      await this.email.send('kafpliz@gmail.com', 'ФРАНЧАЙЗИНГ PIVALDI CITY', 
+    
+      await this.email.send('franch@pivaldi.ru', 'ФРАНЧАЙЗИНГ PIVALDI CITY', 
         `ФИО: ${data.name} ${data.lastName}\n\nНомер телефона: ${data.phone}\n\nПочта: ${data.email}\n\nПланируемый город открытия: ${data.city}`)
 
       return

@@ -1,26 +1,35 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRuleDto } from './dto/create-rule.dto';
 import { UpdateRuleDto } from './dto/update-rule.dto';
+import { PrismaService } from 'src/service/prisma/prisma.service';
 
 @Injectable()
 export class RulesService {
-  create(createRuleDto: CreateRuleDto) {
-    return 'This action adds a new rule';
+
+  constructor(private prisma:PrismaService){}
+
+ async findAll() {
+     try {
+
+      const result = await this.prisma.rules.findMany({
+        select: {
+          id: true,
+          type: true,
+          text: true
+        },
+        orderBy: {
+          createdAt: 'asc'
+        }
+      })
+      const response = {
+        negative: result.filter(item => item.type == 'negative'),
+        positive: result.filter(item => item.type == "positive"),
+      }
+
+      return response
+    } catch (error: any) {
+      throw new HttpException(error.message || 'Внутренняя ошибка', error.status || HttpStatus.BAD_GATEWAY)
+    }
   }
 
-  findAll() {
-    return `This action returns all rules`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} rule`;
-  }
-
-  update(id: number, updateRuleDto: UpdateRuleDto) {
-    return `This action updates a #${id} rule`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} rule`;
-  }
 }

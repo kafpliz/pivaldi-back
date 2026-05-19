@@ -20,6 +20,11 @@ export class PushController {
   broadcast(
     @Headers('x-admin-secret') secret:string,  @Body() body: { title: string; body: string; data?: Record<string, unknown> },
   ){
+
+    console.log("PUSH");
+    console.log(process.env.ADMIN_PUSH_SECRET);
+    console.log(secret);
+    
      if (secret !== process.env.ADMIN_PUSH_SECRET) {
       throw new UnauthorizedException();
     }

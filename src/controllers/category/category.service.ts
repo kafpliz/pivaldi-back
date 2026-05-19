@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CategoryType } from '@prisma/client';
 import { PrismaService } from 'src/service/prisma/prisma.service';
-import { domainForImg, folderPublicName } from 'src/shared/utils/constants';
+import { domainForImg, folderPublicName, positionIds } from 'src/shared/utils/constants';
 
 @Injectable()
 export class CategoryService {
@@ -35,7 +35,7 @@ export class CategoryService {
         try {
             const res = await this.prisma.menuItem.findMany({
                 where: {
-                    categoryId: 14
+                    categoryId: positionIds.main
                 }
             })
            
@@ -51,7 +51,7 @@ export class CategoryService {
 
     async getStock(type:CategoryType){
         try {
-            const categoryId = type == 'REGULAR' ? 16: 27
+            const categoryId = type == 'REGULAR' ? positionIds.stockReg : positionIds.stockFr
          const res = await this.prisma.menuItem.findMany({
                 where: {
                     categoryId

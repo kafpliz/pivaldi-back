@@ -27,7 +27,7 @@ export class PushService {
   }
 
   async register(data: RegisterPushDeviceDto) {
-    
+
     try {
       if (!Expo.isExpoPushToken(data.expoPushToken)) {
         throw new HttpException("Invalid Expo push token", HttpStatus.BAD_REQUEST);
@@ -94,16 +94,44 @@ export class PushService {
     for (const chunk of chunks) {
       tickets.push(...(await this.expo.sendPushNotificationsAsync(chunk)))
     }
-    await this.prisma.notification.updateMany({
-      where: {
-        title: payload.title
-      },
-      data: {
-        count: messages.length,
-      }
-    })
-    return { sent: messages.length, tickets }
-  }
 
+    const invalidTokens: string[] = [];
+    for (let i = 0; i < tickets.length; i++) {
+      const ticket = tickets[i] as any;
+
+      if (ticket.status === 'error') {
+        const token = messages[i].to;
+        if (typeof token === 'string') {
+          console.error(`Push error for token ${token}: ${ticket.message}`);
+          if (ticket.details?.error === 'DeviceNotRegistered') {
+            invalidTokens.push(token);
+          }
+        } else {
+          console.error(`Unexpected token type: ${typeof token}`);
+        }
+      }
+
+      if (invalidTokens.length > 0) {
+        await this.prisma.pushDevice.deleteMany({
+          where: {
+            expoPushToken: { in: invalidTokens }
+          }
+        });
+      }
+
+
+      await this.prisma.notification.updateMany({
+        where: {
+          title: payload.title
+        },
+        data: {
+          count: messages.length,
+        }
+      })
+      return { sent: messages.length, tickets }
+    }
+
+
+  }
 
 }

@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/service/prisma/prisma.service';
-import { domainForImg, folderPublicName } from 'src/shared/utils/utils';
+import { domainForImg, folderPublicName } from 'src/shared/utils/constants';
 
 @Injectable()
 export class FranchiseService {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateRestoDto } from './dto/create-resto.dto';
 import { UpdateRestoDto } from './dto/update-resto.dto';
 import { PrismaService } from 'src/service/prisma/prisma.service';
-import { domainForImg, folderPublicName } from 'src/shared/utils/utils';
+import { domainForImg, folderPublicName } from 'src/shared/utils/constants';
 
 @Injectable()
 export class RestoService {

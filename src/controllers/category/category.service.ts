@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CategoryType } from '@prisma/client';
 import { PrismaService } from 'src/service/prisma/prisma.service';
-import { domainForImg, folderPublicName } from 'src/shared/utils/utils';
+import { domainForImg, folderPublicName } from 'src/shared/utils/constants';
 
 @Injectable()
 export class CategoryService {

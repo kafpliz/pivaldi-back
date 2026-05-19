@@ -10,23 +10,24 @@ export class PushService {
 
   constructor(private prisma: PrismaService) { }
 
-  async getAll(){
-       try {
-        const res = await this.prisma.notification.findMany({
-          orderBy: {
-            createdAt:'desc'
-          },
-          take: 100
-        })
-        console.log(res);
-        
-        return res
-  } catch (error: any) {
+  async getAll() {
+    try {
+      const res = await this.prisma.notification.findMany({
+        orderBy: {
+          createdAt: 'desc'
+        },
+        take: 100
+      })
+      console.log(res);
+
+      return res
+    } catch (error: any) {
       throw new HttpException(error, HttpStatus.BAD_GATEWAY)
     }
   }
 
   async register(data: RegisterPushDeviceDto) {
+    
     try {
       if (!Expo.isExpoPushToken(data.expoPushToken)) {
         throw new HttpException("Invalid Expo push token", HttpStatus.BAD_REQUEST);
@@ -59,9 +60,9 @@ export class PushService {
     const rows = await this.prisma.pushDevice.findMany({
       select: { expoPushToken: true }
     })
-   
+
     const tokens = rows.map((r) => r.expoPushToken);
- await this.prisma.notification.create({
+    await this.prisma.notification.create({
       data: {
         ...payload,
         count: 0,
@@ -93,12 +94,12 @@ export class PushService {
     for (const chunk of chunks) {
       tickets.push(...(await this.expo.sendPushNotificationsAsync(chunk)))
     }
-     await this.prisma.notification.updateMany({
+    await this.prisma.notification.updateMany({
       where: {
         title: payload.title
       },
       data: {
-        count: messages.length,  
+        count: messages.length,
       }
     })
     return { sent: messages.length, tickets }

@@ -15,8 +15,7 @@ export class RestoService {
       delivery: true
      },
       orderBy: [
-      { isFranchise: "asc" },
-      { name: "asc" },
+      {order: 'asc'}
     ]
     })
     const workTime = await this.prisma.workingHour.findMany()

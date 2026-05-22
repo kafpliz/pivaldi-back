@@ -64,6 +64,7 @@ model Restaurant {
   isFranchise Boolean    @default(false)
   restoplace  Json
   tour3d      String
+  order       Int        @default(0)
   updatedAt   DateTime
   createdAt   DateTime   @default(now())
   affiche     Affiche[]

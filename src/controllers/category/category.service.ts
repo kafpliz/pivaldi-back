@@ -25,6 +25,9 @@ export class CategoryService {
         const res = await this.prisma.menuItem.findMany({
             where: {
                 categoryId: id
+            },
+            orderBy: {
+                name: 'asc'
             }
         })
 

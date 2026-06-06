@@ -14,7 +14,7 @@ export class CategoryService {
                 type: type
             },
             orderBy: {
-                name: 'asc'
+                order: 'asc'
             }
         })
 

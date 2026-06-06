@@ -51,6 +51,7 @@ model Category {
   updatedAt DateTime
   createdAt DateTime     @default(now())
   isBar     Boolean      @default(false)
+  order     Int          @default(1)
   MenuItem  MenuItem[]
 
   @@unique([name, type])
@@ -64,9 +65,9 @@ model Restaurant {
   isFranchise Boolean    @default(false)
   restoplace  Json
   tour3d      String
-  order       Int        @default(0)
   updatedAt   DateTime
   createdAt   DateTime   @default(now())
+  order       Int        @default(0)
   affiche     Affiche[]
   delivery    Delivery[]
 }
@@ -140,9 +141,8 @@ model MenuItem {
   price      Float?
   updatedAt  DateTime
   createdAt  DateTime @default(now())
+  order      Int      @default(1)
   Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@unique([name, categoryId])
 }
 
 enum CategoryType {

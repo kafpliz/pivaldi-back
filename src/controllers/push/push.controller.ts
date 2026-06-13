@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Headers, UnauthorizedException, Get } from '@nestjs/common';
+import { Controller, Post, Body, Headers, UnauthorizedException, Get, Query } from '@nestjs/common';
 import { PushService } from './push.service';
 import { RegisterPushDeviceDto } from './dto/create-push.dto';
 
@@ -7,8 +7,8 @@ export class PushController {
   constructor(private readonly pushService: PushService) {}
 
   @Get('all')
-  getAll(){
-    return this.pushService.getAll()
+  getAll(@Query('page') page:string){
+    return this.pushService.getAll(+page)
   }
 
   @Post("register")

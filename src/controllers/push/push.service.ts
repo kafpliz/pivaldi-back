@@ -12,13 +12,15 @@ export class PushService {
 
   constructor(private prisma: PrismaService) { }
 
-  async getAll() {
-    try {
+  async getAll(page: number = 1) {
+    const limit = 25;
+  try {
       const res = await this.prisma.notification.findMany({
         orderBy: {
           createdAt: 'desc'
         },
-        take: 100
+        take: limit,
+        skip: page == 1 ? 0 : limit * (page-1)
       })
 
       return res.map((item) => {

@@ -3,6 +3,8 @@ import { RegisterPushDeviceDto } from './dto/create-push.dto';
 import { Expo, ExpoPushMessage } from "expo-server-sdk";
 import { PrismaService } from 'src/service/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { domainForImg, folderPublicName } from 'src/shared/utils/constants';
+
 @Injectable()
 export class PushService {
 
@@ -18,13 +20,29 @@ export class PushService {
         },
         take: 100
       })
-      console.log(res);
 
-      return res
+      return res.map((item) => {
+        const data = (item.data ?? {}) as unknown as {
+          images?: string[];
+          video?: string;
+          videoOrientation?: 'horizontal' | 'vertical';
+        };
+
+
+        const images = Array.isArray(data.images)
+          ? data.images.map((name) => new URL(`${folderPublicName}${name}`, domainForImg).toString())
+          : undefined;
+        const video = data.video
+          ? new URL(`${folderPublicName}${data.video}`, domainForImg).toString()
+          : undefined;
+
+        return { ...item, images, video, videoOrientation: data.videoOrientation };
+      })
     } catch (error: any) {
       throw new HttpException(error, HttpStatus.BAD_GATEWAY)
     }
   }
+
 
   async register(data: RegisterPushDeviceDto) {
 
@@ -57,22 +75,27 @@ export class PushService {
     data?: Record<string, unknown>;
   }) {
 
-    const rows = await this.prisma.pushDevice.findMany({
-      select: { expoPushToken: true }
-    })
+    try {
+      const rows = await this.prisma.pushDevice.findMany({
+        select: { expoPushToken: true }
+      })
 
-    const tokens = rows.map((r) => r.expoPushToken);
-    await this.prisma.notification.create({
-      data: {
-        ...payload,
-        count: 0,
-        data: payload.data === undefined
-          ? Prisma.JsonNull
-          : (payload.data as Prisma.InputJsonValue),
-      }
-    })
-    return this.sendToTokens(tokens, payload)
-
+      const tokens = rows.map((r) => r.expoPushToken);
+      await this.prisma.notification.create({
+        data: {
+          title: payload.title,
+          body: payload.body,
+          count: 0,
+          data: payload.data === undefined
+            ? Prisma.JsonNull
+            : (payload.data as Prisma.InputJsonValue),
+        }
+      })
+      return await this.sendToTokens(tokens, payload)
+    } catch (error: any) {
+      console.error('sendEverybody error:', error);
+      throw new HttpException(error?.message ?? 'Ошибка при отправке уведомления', HttpStatus.BAD_GATEWAY)
+    }
   }
 
   async sendToTokens(tokens: string[], payload: {
@@ -89,49 +112,55 @@ export class PushService {
       priority: "high",
       channelId: "default",
     }))
+
+    // Нет зарегистрированных устройств — уведомление сохранено, отправлять некому.
+    if (messages.length === 0) {
+      return { sent: 0, tickets: [] as unknown[] }
+    }
+
     const chunks = this.expo.chunkPushNotifications(messages)
-    const tickets: unknown[] = []
+    const tickets: any[] = []
     for (const chunk of chunks) {
-      tickets.push(...(await this.expo.sendPushNotificationsAsync(chunk)))
+      try {
+        tickets.push(...(await this.expo.sendPushNotificationsAsync(chunk)))
+      } catch (error: any) {
+        console.error('Expo sendPushNotificationsAsync error:', error);
+      }
     }
 
     const invalidTokens: string[] = [];
     for (let i = 0; i < tickets.length; i++) {
       const ticket = tickets[i] as any;
 
-      if (ticket.status === 'error') {
-        const token = messages[i].to;
-        if (typeof token === 'string') {
-          console.error(`Push error for token ${token}: ${ticket.message}`);
-          if (ticket.details?.error === 'DeviceNotRegistered') {
-            invalidTokens.push(token);
-          }
-        } else {
-          console.error(`Unexpected token type: ${typeof token}`);
+      if (ticket?.status === 'error') {
+        const token = messages[i]?.to;
+        console.error(`Push error for token ${String(token)}: ${ticket.message}`);
+        if (typeof token === 'string' && ticket.details?.error === 'DeviceNotRegistered') {
+          invalidTokens.push(token);
         }
       }
-
-      if (invalidTokens.length > 0) {
-        await this.prisma.pushDevice.deleteMany({
-          where: {
-            expoPushToken: { in: invalidTokens }
-          }
-        });
-      }
-
-
-      await this.prisma.notification.updateMany({
-        where: {
-          title: payload.title
-        },
-        data: {
-          count: messages.length,
-        }
-      })
-      return { sent: messages.length, tickets }
     }
 
+    if (invalidTokens.length > 0) {
+      await this.prisma.pushDevice.deleteMany({
+        where: {
+          expoPushToken: { in: invalidTokens }
+        }
+      });
+    }
 
+    await this.prisma.notification.updateMany({
+      where: {
+        title: payload.title
+      },
+      data: {
+        count: messages.length,
+      }
+    })
+
+    return { sent: messages.length, tickets }
   }
 
 }
+
+

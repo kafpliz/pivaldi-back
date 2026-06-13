@@ -7,8 +7,8 @@ export class PushController {
   constructor(private readonly pushService: PushService) {}
 
   @Get('all')
-  getAll(@Query('page') page:string){
-    return this.pushService.getAll(+page)
+  getAll(@Query('page') page?:string,@Query('limit') limit?:string,){
+    return this.pushService.getAll(page? + page: undefined, limit ? +limit : undefined )
   }
 
   @Post("register")

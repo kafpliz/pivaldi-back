@@ -12,8 +12,8 @@ export class PushService {
 
   constructor(private prisma: PrismaService) { }
 
-  async getAll(page: number = 1) {
-    const limit = 25;
+  async getAll(page: number = 1, limit:number = 25) {
+   
   try {
       const [res, totalCount] = await Promise.all([
       this.prisma.notification.findMany({
@@ -21,7 +21,7 @@ export class PushService {
         take: limit,
         skip: page == 1 ? 0 : limit * (page - 1)
       }),
-      this.prisma.notification.count() // Get total count
+      this.prisma.notification.count() 
     ]);
 
       let hasNext =  (page * limit) < totalCount;

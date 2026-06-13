@@ -15,21 +15,23 @@ export class PushService {
   async getAll(page: number = 1) {
     const limit = 25;
   try {
-      const res = await this.prisma.notification.findMany({
-        orderBy: {
-          createdAt: 'desc'
-        },
+      const [res, totalCount] = await Promise.all([
+      this.prisma.notification.findMany({
+        orderBy: { createdAt: 'desc' },
         take: limit,
-        skip: page == 1 ? 0 : limit * (page-1)
-      })
+        skip: page == 1 ? 0 : limit * (page - 1)
+      }),
+      this.prisma.notification.count() // Get total count
+    ]);
 
-      return res.map((item) => {
+      let hasNext =  (page * limit) < totalCount;
+
+      return {blog: res.map((item) => {
         const data = (item.data ?? {}) as unknown as {
           images?: string[];
           video?: string;
           videoOrientation?: 'horizontal' | 'vertical';
         };
-
 
         const images = Array.isArray(data.images)
           ? data.images.map((name) => new URL(`${folderPublicName}${name}`, domainForImg).toString())
@@ -39,7 +41,10 @@ export class PushService {
           : undefined;
 
         return { ...item, images, video, videoOrientation: data.videoOrientation };
-      })
+      }), details: {
+        hasNext: hasNext
+      }}
+
     } catch (error: any) {
       throw new HttpException(error, HttpStatus.BAD_GATEWAY)
     }

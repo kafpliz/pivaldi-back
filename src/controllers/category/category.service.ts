@@ -27,7 +27,7 @@ export class CategoryService {
                 categoryId: id
             },
             orderBy: {
-                name: 'asc'
+                order: 'asc'
             }
         })
 

@@ -18,7 +18,7 @@ export class CategoryService {
             }
         })
 
-        return res.filter(item=> item.name != "акции").map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString() }))
+        return res.map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString() }))
     }
 
     async getMenuItem(id:number){

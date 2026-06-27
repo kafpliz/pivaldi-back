@@ -17,7 +17,7 @@ export class PushService {
   try {
       const [res, totalCount] = await Promise.all([
       this.prisma.notification.findMany({
-        orderBy: { createdAt: 'asc' },
+        orderBy: { createdAt: 'desc' },
         take: limit,
         skip: page == 1 ? 0 : limit * (page - 1)
       }),

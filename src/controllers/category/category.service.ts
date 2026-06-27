@@ -54,7 +54,7 @@ export class CategoryService {
 
     async getStock(type:CategoryType){
         try {
-            const categoryId = type == 'REGULAR' ? positionIds.stockReg : positionIds.stockFr
+            const categoryId = type == 'REGULAR' ? positionIds.main : positionIds.main
          const res = await this.prisma.menuItem.findMany({
                 where: {
                     categoryId

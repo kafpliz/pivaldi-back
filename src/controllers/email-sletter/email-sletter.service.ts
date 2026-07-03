@@ -12,7 +12,7 @@ export class EmailSletterService {
     try {
 
       
-      await this.email.send('pivaldihrd@mail.ru', 'Трудоустройство в ресторан PIVALDI', `Имя: ${createEmailSletterDto.name}\n\nНомер телефона: ${createEmailSletterDto.phone}\n\nХочу попасть в ресторан: ${createEmailSletterDto.resto}`)
+      await this.email.send(/* 'pivaldihrd@mail.ru' */ "pivaldi.dev@gmail.com", 'Трудоустройство в ресторан PIVALDI', `Имя: ${createEmailSletterDto.name}\n\nНомер телефона: ${createEmailSletterDto.phone}\n\nХочу попасть в ресторан: ${createEmailSletterDto.resto}`)
 
       return
     } catch (error: any) {
@@ -24,7 +24,7 @@ export class EmailSletterService {
       try {
    
     
-      await this.email.send('franch@pivaldi.ru', 'ФРАНЧАЙЗИНГ PIVALDI CITY', 
+      await this.email.send(/* 'franch@pivaldi.ru' */ "pivaldi.dev@gmail.com", 'ФРАНЧАЙЗИНГ PIVALDI CITY', 
         `ФИО: ${data.name} ${data.lastName}\n\nНомер телефона: ${data.phone}\n\nПочта: ${data.email}\n\nПланируемый город открытия: ${data.city}`)
 
       return

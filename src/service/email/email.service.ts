@@ -26,14 +26,13 @@ export class EmailService {
 
     async send(toEmail: string, subject: string, text:string): Promise<SendResult> {
          try {
-          
-              
             const info = await this.transporter.sendMail({
                 from: 'Pivaldi App',
                 to: toEmail,
                 subject: subject,
                 text: text,
             })
+            console.log(info);
             
             return { success: true, messageId: info.messageId };
         } catch (error) {

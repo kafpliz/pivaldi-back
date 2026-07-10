@@ -28,7 +28,7 @@ export class EmailService {
     async send(toEmail: string, subject: string, text:string): Promise<SendResult> {
          try {
             const info = await this.transporter.sendMail({
-                from: 'Pivaldi App',
+                from: `Pivaldi App <${process.env.SMTP_USER!}>`,
                 to: toEmail,
                 subject: subject,
                 text: text,

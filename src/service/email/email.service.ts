@@ -33,7 +33,7 @@ export class EmailService {
                 subject: subject,
                 text: text,
             })
-            console.log(info);
+          =
             
             return { success: true, messageId: info.messageId };
         } catch (error) {

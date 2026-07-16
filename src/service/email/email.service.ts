@@ -33,7 +33,7 @@ export class EmailService {
                 subject: subject,
                 text: text,
             })
-          =
+          
             
             return { success: true, messageId: info.messageId };
         } catch (error) {

@@ -25,12 +25,21 @@ export class AfficheService {
                     time: 'asc'
                 }
             })
-           for (const item of res) {
-             console.log(new Date(item.time).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }));
-             console.log(item.time);
-           }
+        
             
-            return res.map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString(), }))
+            return res.map(item => 
+                {
+          
+            const mskDate = new Date(item.time);
+            mskDate.setHours(mskDate.getHours() + 3);
+            
+            return { 
+                ...item, 
+                photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString(),
+                time: mskDate.toISOString() 
+            };
+        }
+            )
 
         } catch (error: any) {
             throw new HttpException(error, 500)

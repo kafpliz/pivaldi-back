@@ -25,6 +25,10 @@ export class AfficheService {
                     time: 'asc'
                 }
             })
+           for (const item of res) {
+             console.log(new Date(item.time).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }));
+           }
+            
             return res.map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString(), }))
 
         } catch (error: any) {

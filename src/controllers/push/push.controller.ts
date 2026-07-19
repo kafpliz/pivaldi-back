@@ -8,7 +8,7 @@ export class PushController {
 
   @Get('all')
   getAll(@Query('page') page?:string,@Query('limit') limit?:string,){
-    return this.pushService.getAll(page? + page: undefined, /* limit ? +limit : undefined  */ 10)
+    return this.pushService.getAll(page? + page: undefined, limit ? +limit : undefined )
   }
 
   @Post("register")

@@ -120,7 +120,7 @@ export class PushService {
       channelId: "default",
     }))
 
-    // Нет зарегистрированных устройств — уведомление сохранено, отправлять некому.
+
     if (messages.length === 0) {
       return { sent: 0, tickets: [] as unknown[] }
     }

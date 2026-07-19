@@ -25,7 +25,7 @@ export class AfficheService {
                     time: 'asc'
                 }
             })
-            return res.map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString() }))
+            return res.map(item => ({ ...item, photo: new URL(`${folderPublicName}${item.photo}`, domainForImg).toString(),   time: new Date(item.time).toLocaleString('ru-RU', { timeZone: 'Europe/Moscow' }) }))
 
         } catch (error: any) {
             throw new HttpException(error, 500)
